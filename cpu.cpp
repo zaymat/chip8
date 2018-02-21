@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <vector>
+#include <stack>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
@@ -12,12 +12,35 @@ using namespace std;
 Cpu::Cpu(string filename){
 
     char a;
+    unsigned char chip8_fontset[80] =
+        { 
+        0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+        0x20, 0x60, 0x20, 0x20, 0x70, // 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+        0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+        0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+        0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+        0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+        0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+        };
 
     ifstream file;
     file.open(filename, ios::in | ios::binary);
     if(file)
     {
-        for(int i = 0; i<4096; i++){
+        for (int i = 0; i < 80; i++){
+            memory[i+80] = chip8_fontset[i];
+        }
+
+        for(int i = 512; i<4096; i++){
             if(file.read(&a, sizeof(char))){
             memory[i] = a;
             }
@@ -41,13 +64,13 @@ Cpu::Cpu(string filename){
 }
 
 void Cpu::call(unsigned short address){
-    this->stack.push_back(this->pc+1);
+    this->stack.push(this->pc+2);
     this->pc = address;
 }
 
 void Cpu::ret(){
-    this->pc = this->stack.back();
-    this->stack.pop_back();
+    this->pc = this->stack.top();
+    this->stack.pop();
 }
 
 void Cpu::jump(unsigned short address){
@@ -225,6 +248,26 @@ unsigned short Cpu::getPc(){
     return this->pc;
 }
 
+void Cpu::setPc(unsigned short pc){
+    this->pc = pc;
+}
+
 unsigned short Cpu::getIndex(){
     return this->index;
+}
+
+unsigned char Cpu::getDelayTimer(){
+    return this->delay_timer;
+}
+
+unsigned char Cpu::getSoundTimer(){
+    return this->sound_timer;
+}
+
+void Cpu::updateDelay(){
+    this->delay_timer--;
+}
+
+void Cpu::updateSound(){
+    this->sound_timer--;
 }

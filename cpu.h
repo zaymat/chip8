@@ -2,7 +2,7 @@
 #define CPU_H_INCLUDED
 
 #include <string>
-#include <vector>
+#include <stack>
 
 class Cpu
 {
@@ -41,14 +41,19 @@ class Cpu
         // Getters and Setters 
         unsigned char getMemory(unsigned short i);
         unsigned short getPc();
+        void setPc(unsigned short pc);
         unsigned short getIndex();
+        void updateDelay();
+        void updateSound();
+        unsigned char getDelayTimer();
+        unsigned char getSoundTimer();
 
     private:
         unsigned short index;
         unsigned short pc;
         unsigned char memory[4096];
         unsigned char V[16];
-        std::vector<unsigned short> stack;
+        std::stack<unsigned short> stack;
         unsigned char delay_timer;
         unsigned char sound_timer;
 
