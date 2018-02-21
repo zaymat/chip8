@@ -15,10 +15,12 @@ Cpu::Cpu(string filename){
     if(file)
     {
         for(int i = 0; i<4096; i++){
-            file.get(this->memory[i]);
+            char a;
+            file.get(a);
+            this->memory[i] = a;
         }
         this->index = 0;
-        this->pc = 0;
+        this->pc = 0x200;
         for(int i = 0; i<4096; i++){
             this->V[i] = 0;
         }
@@ -32,17 +34,18 @@ Cpu::Cpu(string filename){
 
 }
 
-void Cpu::call(){
+void Cpu::call(unsigned short address){
     this->stack.push_back(this->pc+1);
-    this->pc = this->index;
+    this->pc = address;
 }
 
 void Cpu::ret(){
-    this->pc = this->stack.pop_back();
+    this->pc = this->stack.back();
+    this->stack.pop_back();
 }
 
-void Cpu::jump(){
-    this->pc = this->index;
+void Cpu::jump(unsigned short address){
+    this->pc = address;
 }
 
 void Cpu::ifEq(unsigned char x, unsigned char val){
@@ -87,17 +90,17 @@ void Cpu::assign(unsigned char x, unsigned char y){
     this->pc += 2;
 }
 
-void Cpu::or(unsigned char x, unsigned char y){
+void Cpu::BitOr(unsigned char x, unsigned char y){
     this->V[x] = this->V[x] | this->V[y];
     this->pc += 2;
 }
 
-void Cpu::and(unsigned char x, unsigned char y){
+void Cpu::BitAnd(unsigned char x, unsigned char y){
     this->V[x] = this->V[x] & this->V[y];
     this->pc += 2;
 }
 
-void Cpu::xor(unsigned char x, unsigned char y){
+void Cpu::BitXor(unsigned char x, unsigned char y){
     this->V[x] = this->V[x] ^ this->V[y];
     this->pc += 2;
 }
@@ -117,7 +120,7 @@ void Cpu::subReg(unsigned char x, unsigned char y){
 void Cpu::shiftRight(unsigned char x, unsigned char y){
     char res = this->V[y] >> 1;
     this->V[x] = res;
-    this->V[15] = (this->V[y] << 3 & x0F) >> 3;
+    this->V[15] = (this->V[y] << 3 & 0x0F) >> 3;
     this->V[y] = res;
     this->pc += 2;
 }
@@ -131,7 +134,7 @@ void Cpu::subCopy(unsigned char x, unsigned char y){
 void Cpu::shiftLeft(unsigned char x, unsigned char y){
     char res = this->V[y] << 1;
     this->V[x] = res;
-    this->V[15] = (this->V[y] >> 3 & x0F) >> 3;
+    this->V[15] = (this->V[y] >> 3 & 0x0F) >> 3;
     this->V[y] = res;
     this->pc += 2;
 }
@@ -166,7 +169,7 @@ void Cpu::getDelay(unsigned char x){
 }
 
 void Cpu::addI(unsigned char x){
-    this->I += this->V[x];
+    this->index += this->V[x];
     this->pc += 2;
 }
 
@@ -194,4 +197,18 @@ void Cpu::regLoad(unsigned char x){
         this->V[i] = this->memory[this->index + i];
     }
     this->pc += 2;
+}
+
+// Getters and Setter
+
+unsigned char Cpu::getMemory(unsigned short i){
+    return this->memory[i];
+}
+
+unsigned short Cpu::getPc(){
+    return this->pc;
+}
+
+unsigned short Cpu::getIndex(){
+    return this->index;
 }

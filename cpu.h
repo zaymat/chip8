@@ -8,22 +8,22 @@ class Cpu
 {
     public:
         Cpu(std::string filename);
-        void call();
-        void return();
-        void jump();
+        void call(unsigned short address);
+        void ret();
+        void jump(unsigned short address);
         void ifEq(unsigned char x, unsigned char val);
         void ifNotEq(unsigned char x, unsigned char val);
         void ifEqReg(unsigned char x, unsigned char y);
         void set(unsigned char x, unsigned char val);
         void add(unsigned char x, unsigned char val);
         void assign(unsigned char x, unsigned char y);
-        void or(unsigned char x, unsigned char y);
-        void and(unsigned char x, unsigned char y);
-        void xor(unsigned char x, unsigned char y);
-        void add(unsigned char x, unsigned char y);
-        void sub(unsigned char x, unsigned char y);
+        void BitOr(unsigned char x, unsigned char y);
+        void BitAnd(unsigned char x, unsigned char y);
+        void BitXor(unsigned char x, unsigned char y);
+        void addReg(unsigned char x, unsigned char y);
+        void subReg(unsigned char x, unsigned char y);
         void shiftRight(unsigned char x, unsigned char y);
-        void sub(unsigned char x, unsigned char y);
+        void subCopy(unsigned char x, unsigned char y);
         void shiftLeft(unsigned char x, unsigned char y);
         void ifNotEqReg(unsigned char x, unsigned char y);
         void setI(unsigned short val);
@@ -36,7 +36,10 @@ class Cpu
         void regDump(unsigned char x);
         void regLoad(unsigned char x);
 
-
+        // Getters and Setters 
+        unsigned char getMemory(unsigned short i);
+        unsigned short getPc();
+        unsigned short getIndex();
 
     private:
         unsigned short index;
