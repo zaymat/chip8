@@ -10,26 +10,32 @@
 using namespace std;
 
 Cpu::Cpu(string filename){
-    ifstream file(filename);
 
+    char a;
+
+    ifstream file;
+    file.open(filename, ios::in | ios::binary);
     if(file)
     {
         for(int i = 0; i<4096; i++){
-            char a;
-            file.get(a);
-            this->memory[i] = a;
+            if(file.read(&a, sizeof(char))){
+            memory[i] = a;
+            }
+            else{
+                memory[i] = 0;
+            }
         }
-        this->index = 0;
-        this->pc = 0x200;
-        for(int i = 0; i<4096; i++){
-            this->V[i] = 0;
+        index = 0;
+        pc = 0x200;
+        for(int i = 0; i<16; i++){
+            V[i] = 0;
         }
-        this->delay_timer = 60;
-        this->sound_timer = 60;
+        delay_timer = 60;
+        sound_timer = 60;
     }
     else
     {
-        cout << "ERREUR: Impossible d'ouvrir le fichier en lecture." << endl;
+        cout << "ERROR: Cannot open the file" << filename << endl;
     }
 
 }

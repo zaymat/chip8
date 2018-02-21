@@ -1,4 +1,8 @@
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <SFML/Window.hpp>
+
 #include "cpu.h"
 
 using namespace std;
@@ -10,12 +14,18 @@ int main (int argc, char *argv[])
         return 1;
     }
 
-    Cpu cpu(argv[1]);
+    string file;
+    file = string(argv[1]);
+    Cpu cpu(file);
+
+    string title;
+    title = "Chip 8 : " + string(argv[1]);
+    sf::Window window(sf::VideoMode(640, 320), title);
 
     unsigned char x, y, val;
     unsigned short address, opcode;
 
-    while(1){
+    while(window.isOpen()){
         opcode = cpu.getMemory(cpu.getPc()) << 8 | cpu.getMemory(cpu.getPc() + 1);
         switch(opcode & 0xF000){
             case 0x0000:
