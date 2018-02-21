@@ -27,9 +27,11 @@ class Cpu
         void shiftLeft(unsigned char x, unsigned char y);
         void ifNotEqReg(unsigned char x, unsigned char y);
         void setI(unsigned short val);
-        void JumpV0(unsigned short val);
+        void jumpV0(unsigned short val);
         void andRand(unsigned char x, unsigned char val);
         void getDelay(unsigned char x);
+        void setDelay(unsigned char x);
+        void setSound(unsigned char x);
         void addI(unsigned char x);
         void getFont(unsigned char x);
         void BCD(unsigned char x);

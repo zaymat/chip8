@@ -153,7 +153,7 @@ void Cpu::setI(unsigned short val){
     this->pc += 2;
 }
 
-void Cpu::JumpV0(unsigned short val){
+void Cpu::jumpV0(unsigned short val){
     this->pc = this->V[0] + this->index;
 }
 
@@ -165,6 +165,16 @@ void Cpu::andRand(unsigned char x, unsigned char val){
 
 void Cpu::getDelay(unsigned char x){
     this->V[x] = this->delay_timer;
+    this->pc += 2;
+}
+
+void Cpu::setDelay(unsigned char x){
+    this->delay_timer = this->V[x];
+    this->pc += 2;
+}
+
+void Cpu::setSound(unsigned char x){
+    this->sound_timer = this->V[x];
     this->pc += 2;
 }
 
