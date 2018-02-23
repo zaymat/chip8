@@ -37,6 +37,8 @@ class Cpu
         void BCD(unsigned char x);
         void regDump(unsigned char x);
         void regLoad(unsigned char x);
+        void ifKey(unsigned char x);
+        void ifNotKey(unsigned char x);
 
         // Getters and Setters 
         unsigned char getMemory(unsigned short i);
@@ -47,6 +49,8 @@ class Cpu
         void updateSound();
         unsigned char getDelayTimer();
         unsigned char getSoundTimer();
+        void setKey(unsigned char key, unsigned char val);
+        unsigned char getReg(unsigned char x);
 
     private:
         unsigned short index;
@@ -56,7 +60,7 @@ class Cpu
         std::stack<unsigned short> stack;
         unsigned char delay_timer;
         unsigned char sound_timer;
-
+        unsigned char key[16];
 };
 
 #endif // CPU_H_INCLUDED

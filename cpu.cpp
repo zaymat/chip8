@@ -11,6 +11,8 @@ using namespace std;
 
 Cpu::Cpu(string filename){
 
+    srand((unsigned)time(NULL));
+
     char a;
     unsigned char chip8_fontset[80] =
         { 
@@ -37,7 +39,7 @@ Cpu::Cpu(string filename){
     if(file)
     {
         for (int i = 0; i < 80; i++){
-            memory[i+80] = chip8_fontset[i];
+            memory[i] = chip8_fontset[i];
         }
 
         for(int i = 512; i<4096; i++){
@@ -52,6 +54,7 @@ Cpu::Cpu(string filename){
         pc = 0x200;
         for(int i = 0; i<16; i++){
             V[i] = 0;
+            key[i] == 0;
         }
         delay_timer = 60;
         sound_timer = 60;
@@ -142,28 +145,28 @@ void Cpu::addReg(unsigned char x, unsigned char y){
 
 void Cpu::subReg(unsigned char x, unsigned char y){
     this->V[x] = (this->V[x] - this->V[y]) % 256;
-    this->V[15] = (256 - this->V[x] + this->V[y]) / 256;
+    this->V[15] = (256 + this->V[x] - this->V[y]) / 256;
     this->pc += 2;
 }
 
 void Cpu::shiftRight(unsigned char x, unsigned char y){
     char res = this->V[y] >> 1;
     this->V[x] = res;
-    this->V[15] = (this->V[y] << 3 & 0x0F) >> 3;
+    this->V[15] = this->V[y] & 0x01;
     this->V[y] = res;
     this->pc += 2;
 }
 
 void Cpu::subCopy(unsigned char x, unsigned char y){
     this->V[x] = (this->V[y] - this->V[x]) % 256;
-    this->V[15] = (256 - this->V[y] + this->V[x]) / 256;
+    this->V[15] = (256 + this->V[y] - this->V[x]) / 256;
     this->pc += 2;
 }
 
 void Cpu::shiftLeft(unsigned char x, unsigned char y){
     char res = this->V[y] << 1;
     this->V[x] = res;
-    this->V[15] = (this->V[y] >> 3 & 0x0F) >> 3;
+    this->V[15] = (this->V[y] & 0x80) >> 7;
     this->V[y] = res;
     this->pc += 2;
 }
@@ -187,7 +190,7 @@ void Cpu::jumpV0(unsigned short val){
 }
 
 void Cpu::andRand(unsigned char x, unsigned char val){
-    char randChar = rand() % (256);
+    char randChar = rand() % 256;
     this->V[x] = randChar & val;
     this->pc += 2;
 }
@@ -213,7 +216,7 @@ void Cpu::addI(unsigned char x){
 }
 
 void Cpu::getFont(unsigned char x){
-    this->index = 16 * x + 80;
+    this->index = 5 * this->V[x];
     this->pc += 2;
 }
 
@@ -236,6 +239,24 @@ void Cpu::regLoad(unsigned char x){
         this->V[i] = this->memory[this->index + i];
     }
     this->pc += 2;
+}
+
+void Cpu::ifKey(unsigned char x){
+    if(this->key[this->V[x]] == 1){
+        this->pc += 4;
+    }
+    else{
+        this->pc += 2;
+    }
+}
+
+void Cpu::ifNotKey(unsigned char x){
+    if(this->key[this->V[x]] != 1){
+        this->pc += 4;
+    }
+    else{
+        this->pc += 2;
+    }
 }
 
 // Getters and Setter
@@ -270,4 +291,12 @@ void Cpu::updateDelay(){
 
 void Cpu::updateSound(){
     this->sound_timer--;
+}
+
+void Cpu::setKey(unsigned char key, unsigned char val){
+    this->key[key] = val;
+}
+
+unsigned char Cpu::getReg(unsigned char x){
+    return this->V[x];
 }
