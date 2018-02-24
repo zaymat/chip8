@@ -42,9 +42,13 @@ Cpu::Cpu(string filename){
             memory[i] = chip8_fontset[i];
         }
 
+        for (int i = 80; i < 512; i++){
+            memory[i] = 0;
+        }
+
         for(int i = 512; i<4096; i++){
             if(file.read(&a, sizeof(char))){
-            memory[i] = a;
+                memory[i] = a;
             }
             else{
                 memory[i] = 0;
@@ -54,7 +58,7 @@ Cpu::Cpu(string filename){
         pc = 0x200;
         for(int i = 0; i<16; i++){
             V[i] = 0;
-            key[i] == 0;
+            key[i] = 0;
         }
         delay_timer = 60;
         sound_timer = 60;
@@ -138,19 +142,19 @@ void Cpu::BitXor(unsigned char x, unsigned char y){
 }
 
 void Cpu::addReg(unsigned char x, unsigned char y){
-    this->V[x] = (this->V[x] + this->V[y]) % 256;
     this->V[15] = (this->V[x] + this->V[y]) / 256;
+    this->V[x] = (this->V[x] + this->V[y]) % 256;
     this->pc += 2;
 }
 
 void Cpu::subReg(unsigned char x, unsigned char y){
-    this->V[x] = (this->V[x] - this->V[y]) % 256;
     this->V[15] = (256 + this->V[x] - this->V[y]) / 256;
+    this->V[x] = (this->V[x] - this->V[y]) % 256;
     this->pc += 2;
 }
 
 void Cpu::shiftRight(unsigned char x, unsigned char y){
-    char res = this->V[y] >> 1;
+    unsigned char res = this->V[y] >> 1;
     this->V[x] = res;
     this->V[15] = this->V[y] & 0x01;
     this->V[y] = res;
@@ -158,13 +162,13 @@ void Cpu::shiftRight(unsigned char x, unsigned char y){
 }
 
 void Cpu::subCopy(unsigned char x, unsigned char y){
-    this->V[x] = (this->V[y] - this->V[x]) % 256;
     this->V[15] = (256 + this->V[y] - this->V[x]) / 256;
+    this->V[x] = (this->V[y] - this->V[x]) % 256;
     this->pc += 2;
 }
 
 void Cpu::shiftLeft(unsigned char x, unsigned char y){
-    char res = this->V[y] << 1;
+    unsigned char res = this->V[y] << 1;
     this->V[x] = res;
     this->V[15] = (this->V[y] & 0x80) >> 7;
     this->V[y] = res;
@@ -186,7 +190,7 @@ void Cpu::setI(unsigned short val){
 }
 
 void Cpu::jumpV0(unsigned short val){
-    this->pc = this->V[0] + this->index;
+    this->pc = this->V[0] + val;
 }
 
 void Cpu::andRand(unsigned char x, unsigned char val){
@@ -229,14 +233,16 @@ void Cpu::BCD(unsigned char x){
 
 void Cpu::regDump(unsigned char x){
     for(int i = 0; i<= x; i++){
-        this->memory[this->index + i] = this->V[i];
+        this->memory[this->index] = this->V[i];
+        this->index += 1;
     }
     this->pc += 2;
 }
 
 void Cpu::regLoad(unsigned char x){
     for(int i = 0; i<= x; i++){
-        this->V[i] = this->memory[this->index + i];
+        this->V[i] = this->memory[this->index];
+        this->index += 1;
     }
     this->pc += 2;
 }

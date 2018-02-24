@@ -119,18 +119,18 @@ unsigned char Gpu::waitEvent(sf::Event *event){
                 case sf::Keyboard::F:
                     return 0x0E;
                 
-                case sf::Keyboard::W:
-                    return 0x0A;
-                
                 case sf::Keyboard::X:
                     return 0x00;
                 
                 case sf::Keyboard::C:
-                    return 0x0C;
+                    return 0x0B;
 
                 case sf::Keyboard::V:
                     return 0x0F;
 
+                case sf::Keyboard::W:
+                    return 0x0A;
+                
                 default:
                     break;
             }

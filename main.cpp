@@ -259,7 +259,7 @@ int main (int argc, char *argv[])
         cpu.updateSound();
     }  
 
-    usleep(200);
+    usleep(20);
     }
     
 
