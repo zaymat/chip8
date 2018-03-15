@@ -9,11 +9,18 @@
 
 using namespace std;
 
+/*
+    This class represent the CPU of the emulator. It implements all the methods necesserary 
+    to execute the majority of opcode (except those which correspond to GPU and Keyboard interrupts).
+*/
+
 Cpu::Cpu(string filename){
 
     srand((unsigned)time(NULL));
 
     char a;
+
+    // Fonts in memory
     unsigned char chip8_fontset[80] =
         { 
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -35,17 +42,19 @@ Cpu::Cpu(string filename){
         };
 
     ifstream file;
+
+    // Load the game
     file.open(filename, ios::in | ios::binary);
+
+    // Check whether the file exist
     if(file)
     {
-        for (int i = 0; i < 80; i++){
-            memory[i] = chip8_fontset[i];
+        // Charging fonts in memory
+        for (int i = 80; i < 160; i++){
+            memory[i] = chip8_fontset[i-80];
         }
 
-        for (int i = 80; i < 512; i++){
-            memory[i] = 0;
-        }
-
+        // Loading the game in memory
         for(int i = 512; i<4096; i++){
             if(file.read(&a, sizeof(char))){
                 memory[i] = a;
@@ -54,12 +63,18 @@ Cpu::Cpu(string filename){
                 memory[i] = 0;
             }
         }
+
+        // Set index and program counter. Note : pc start at address 0x200 (512)
         index = 0;
         pc = 0x200;
+
+        // Wipe unused cases
         for(int i = 0; i<16; i++){
             V[i] = 0;
             key[i] = 0;
         }
+
+        // Set timers
         delay_timer = 60;
         sound_timer = 60;
     }
@@ -149,7 +164,7 @@ void Cpu::addReg(unsigned char x, unsigned char y){
 
 void Cpu::subReg(unsigned char x, unsigned char y){
     this->V[15] = (256 + this->V[x] - this->V[y]) / 256;
-    this->V[x] = (this->V[x] - this->V[y]) % 256;
+    this->V[x] = this->V[x] - this->V[y];
     this->pc += 2;
 }
 
@@ -163,7 +178,7 @@ void Cpu::shiftRight(unsigned char x, unsigned char y){
 
 void Cpu::subCopy(unsigned char x, unsigned char y){
     this->V[15] = (256 + this->V[y] - this->V[x]) / 256;
-    this->V[x] = (this->V[y] - this->V[x]) % 256;
+    this->V[x] = this->V[y] - this->V[x];
     this->pc += 2;
 }
 
@@ -220,19 +235,19 @@ void Cpu::addI(unsigned char x){
 }
 
 void Cpu::getFont(unsigned char x){
-    this->index = 5 * this->V[x];
+    this->index = 5 * this->V[x] + 80;
     this->pc += 2;
 }
 
 void Cpu::BCD(unsigned char x){
     this->memory[this->index] = this->V[x] / 100;
     this->memory[this->index + 1] = (this->V[x] / 10) % 10;
-    this->memory[this->index + 2] = (this->V[x]) % 100;
+    this->memory[this->index + 2] = ((this->V[x]) % 100) % 10;
     this->pc += 2;
 }
 
 void Cpu::regDump(unsigned char x){
-    for(int i = 0; i<= x; i++){
+    for(int i = 0; i <= x; i++){
         this->memory[this->index] = this->V[i];
         this->index += 1;
     }
@@ -240,7 +255,7 @@ void Cpu::regDump(unsigned char x){
 }
 
 void Cpu::regLoad(unsigned char x){
-    for(int i = 0; i<= x; i++){
+    for(int i = 0; i <= x; i++){
         this->V[i] = this->memory[this->index];
         this->index += 1;
     }

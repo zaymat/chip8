@@ -5,13 +5,22 @@
 
 using namespace std;
 
+/*
+    This class represent the GPU of the emulator. It implements all the methods necesserary 
+    to execute the  GPU and Keyboard interrupts opcodes.
+*/
+
 Gpu::Gpu(std::string filename){
     string title;
     title = "Chip 8 : " + filename;
 
+    // Create the window
     this->window.create(sf::VideoMode(640, 320), title);
     this->window.clear(sf::Color::Black);
 
+
+    // Create CHIP 8 pixels. gfx stores the state of the pixel and pixels the SFML squares
+    // representing the pixels (there, the screen is scaled by 10 to be more visible)
     for(int i = 0; i < 64; i++){
         for(int j = 0; j < 32; j++){
             gfx[i][j] = 0;
@@ -24,21 +33,24 @@ Gpu::Gpu(std::string filename){
     this->window.display();
 }
 
+// Function that draw in Xor mode
 unsigned char Gpu::draw(unsigned char x, unsigned char y, unsigned char height, vector<unsigned char> sprite){
     unsigned char VF(0);
     int xi,yi;
     for (int j = 0; j < height; j++)
     {
-        yi = (y + j) % 32;
+        yi = (y + j);
         for(int i = 0; i < 8; i++)
         {
-            xi = (x + i) % 64;
+            xi = (x + i);
             if((sprite[j] & (0x80 >> i)) != 0)
             {
-                if(this->gfx[xi][yi] == 1){
-                    VF = 1;                   
+                if (x < 64 && y < 32){
+                    if(this->gfx[xi][yi] == 1){
+                        VF = 1;                   
+                    }
+                    this->gfx[xi][yi] ^= 1;
                 }
-                this->gfx[xi][yi] ^= 1;
             }
         }
     }
@@ -46,11 +58,11 @@ unsigned char Gpu::draw(unsigned char x, unsigned char y, unsigned char height, 
     for(int i = 0; i < 64; i++){
         for(int j = 0; j < 32; j++){
             if(this->gfx[i][j] == 0){
-                this->pixels[i][j].setFillColor(sf::Color(0, 128, 128));
+                this->pixels[i][j].setFillColor(sf::Color(0, 0, 0));
                 this->window.draw(this->pixels[i][j]);
             }
             else{
-                this->pixels[i][j].setFillColor(sf::Color(255, 0, 0));
+                this->pixels[i][j].setFillColor(sf::Color(255, 255, 255));
                 this->window.draw(this->pixels[i][j]);
             }
             
@@ -63,15 +75,17 @@ unsigned char Gpu::draw(unsigned char x, unsigned char y, unsigned char height, 
 
 }
 
+// Check whether the window is openned
 bool Gpu::isOpen(){
     return this->window.isOpen();
 }
 
+// Wipe the screen
 void Gpu::clear(){
     this->window.clear();
     for(int i = 0; i < 64; i++){
         for(int j = 0; j < 32; j++){
-            this->pixels[i][j].setFillColor(sf::Color(0, 128, 128));
+            this->pixels[i][j].setFillColor(sf::Color(0, 0, 0));
             this->gfx[i][j] = 0;
             this->window.draw(this->pixels[i][j]);     
         }
@@ -79,8 +93,10 @@ void Gpu::clear(){
     this->window.display();
 }
 
+// Wait for an event to occur
 unsigned char Gpu::waitEvent(sf::Event *event){
     while(this->window.waitEvent(*event)){
+        
         if(event->type == sf::Event::KeyPressed){
             switch(event->key.code){
                 case sf::Keyboard::Num1:
@@ -135,11 +151,15 @@ unsigned char Gpu::waitEvent(sf::Event *event){
                     break;
             }
         }
-    };
+    }
+
+    return 0xFF;
 }
 
+// Check if an event occured and return its value
 unsigned short Gpu::pollEvent(sf::Event *event){
     this->window.pollEvent(*event);
+
     if(event->type == sf::Event::KeyReleased){
         switch(event->key.code){
             case sf::Keyboard::Num1:
