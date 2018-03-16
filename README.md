@@ -1,4 +1,4 @@
-# chip8 emulator
+# CHIP 8 emulator
 
 The goal of this project is to create a CHIP 8 emulator in C++ using SFML for graphics.
 
@@ -25,7 +25,7 @@ chmod +x chip 8
 ``` 
 Flags: 
 * -s enable shift_quirk 
-* -l enable load_quirl
+* -l enable load_quirk
 
 ## Load_quirk and Shift_quirk
 
