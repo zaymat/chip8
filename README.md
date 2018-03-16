@@ -10,6 +10,14 @@ The emulator is represented by two classes : CPU and GPU (which treat Keyboard i
 
 The main function fetch and parse the opcode and call the right function whether a CPU or a GPU method.
 
+## Compilation
+```
+git clone https://github.com/zaymat/chip8
+cd chip8
+make
+make clean
+```
+
 ## Improvements
 
 * Emulate sound to hear to BEEP sound of the machine
