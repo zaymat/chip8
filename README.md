@@ -16,7 +16,43 @@ git clone https://github.com/zaymat/chip8
 cd chip8
 make
 make clean
+chmod +x chip 8
 ```
+
+## Execution
+```
+./chip8 path_to_game [-s] [-l]
+``` 
+Flags: 
+* -s enable shift_quirk 
+* -l enable load_quirl
+
+## Load_quirk and Shift_quirk
+
+### Explanation of the flags
+
+Load/Store quirks - Instructions 0xFX55 and 0xFX65 increments value of Index register but some CHIP-8 programs assume that they don't. Enabling this quirk causes I register to become unchanged after the instruction.
+
+Shift quirks - Shift instructions 0x8XY6 and 0x8XYE originally shift register VY and store results in register VX. Some CHIP-8 programs incorrectly assume that the VX register is shifted by this instruction, and VY remains unmodified. Enabling this quirk causes VX to become shifted and VY remain untouched.
+
+[https://github.com/tomdaley92/Kiwi8/issues/9]
+
+### List of games needing those flags
+
+Enabling ***load_quirk*** is recommended for:
+* Astro Dodge [Revival Studios, 2008]
+* Tic-Tac-Toe [David Winter]
+* Stars [Sergey Naydenov, 2010]
+* Connect 4 [David Winter]
+* Hidden [David Winter, 1996]
+
+Enabling ***shift_quirk*** is recommended for:
+* BMP Viewer - Hello (C8 example) [Hap, 2005]
+* Space Invaders [David Winter]
+* Keypad Test [Hap, 2006]
+
+Enabling both ***shift_quirk*** AND ***load_quirk*** is recommended for:
+* Blinky [Hans Christian Egeberg, 1991]
 
 ## Improvements
 
