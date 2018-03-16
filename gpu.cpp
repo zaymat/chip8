@@ -96,7 +96,9 @@ void Gpu::clear(){
 // Wait for an event to occur
 unsigned char Gpu::waitEvent(sf::Event *event){
     while(this->window.waitEvent(*event)){
-        
+        if(event->type == sf::Event::Closed && this->window.waitEvent(*event) == true){
+        this->window.close();
+        }
         if(event->type == sf::Event::KeyPressed){
             switch(event->key.code){
                 case sf::Keyboard::Num1:
@@ -158,8 +160,10 @@ unsigned char Gpu::waitEvent(sf::Event *event){
 
 // Check if an event occured and return its value
 unsigned short Gpu::pollEvent(sf::Event *event){
-    this->window.pollEvent(*event);
-
+    bool check = this->window.pollEvent(*event);
+    if(event->type == sf::Event::Closed && check == true){
+        this->window.close();
+    }
     if(event->type == sf::Event::KeyReleased){
         switch(event->key.code){
             case sf::Keyboard::Num1:
