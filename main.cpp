@@ -17,17 +17,75 @@ int main (int argc, char *argv[])
     //         val is a 8 bits value
     //         x,y are 8 bits registers ids
 
-    // Check whether the game path is provided  
-    if (argc != 2){
-        cout << "Wrong number of argument: 1 is required but " << argc-1 << " were given" << endl;
+    // Declare cpu arguments
+    string file = "";
+    int load_quirk = 0;
+    int shift_quirk = 0;
+
+    // Parse the arguments
+    // Must be provided :
+    //              - path to the game
+    // Can be provided :
+    //              - s : set shift_quirk to true
+    //              - l : set load_quirk to true
+
+    if (argc < 2 ){
+        cout << "Wrong number of argument: at least 1 is required but " << argc-1 << " was given" << endl;
         return 1;
     }
+    else if (argc > 4){
+        cout << "Wrong number of argument: max 3 can be provided but " << argc-1 << " were given" << endl;
+        return 1;
+    }
+    else{
+        for(int i = 1; i < argc; i++){
+            // Convert args to string
+            string arg = string(argv[i]);
 
-    string file;
-    file = string(argv[1]);
+            if (arg == "-l"){
+                load_quirk = 1;
+            }
+            else if (arg == "-s"){
+                shift_quirk = 1;
+            }
+            else if (arg == "-ls"){
+                shift_quirk = 1;
+                load_quirk = 1;
+            }
+            else if (arg == "-sl"){
+                shift_quirk = 1;
+                load_quirk = 1;
+            }
+            else if (arg == "--help"){
+                cout << "Welcome to CHIP 8 emulator help page \n\n"
+                "You must provide the path to the game file\n\n"
+                "Flags :\n"
+                "\t -s : set shift_quirk to true (must be enabled for some games)\n"
+                "\t -l : set load_quirk to true (must be enabled for some games)\n" << endl;
+                return 0;
+            }
+            else if (arg == "-h"){
+                cout << "Welcome to CHIP 8 emulator help page \n\n"
+                "You must provide the path to the game file\n\n"
+                "Flags :\n"
+                "\t -s : set shift_quirk to true (must be enabled for some games)\n"
+                "\t -l : set load_quirk to true (must be enabled for some games)\n" << endl;
+                return 0;
+            }
+            else if ((char)arg[0] == '-'){
+                cout << "Unknown argument " << arg << ". Please see help page (-h or --help)" << endl;
+                return 1;
+            }
+            else{
+                file = arg;
+            }
+        }
+    }
+
+    
 
     // Creating Cpu and Gpu objects
-    Cpu cpu(file);
+    Cpu cpu(file, load_quirk, shift_quirk);
     Gpu gpu(file);
     
     unsigned char x, y, val;
@@ -43,8 +101,6 @@ int main (int argc, char *argv[])
         
         // Fetching the opcode
         opcode = cpu.getMemory(cpu.getPc()) << 8 | cpu.getMemory(cpu.getPc() + 1);
-
-        printf("%x:%x\n", opcode, cpu.getPc());
 
         // Parsing the opcode
         switch(opcode & 0xF000){

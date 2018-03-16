@@ -7,7 +7,7 @@
 class Cpu
 {
     public:
-        Cpu(std::string filename);
+        Cpu(std::string filename, int load_quirk, int shift_quirk);
         void call(unsigned short address);
         void ret();
         void jump(unsigned short address);
@@ -61,6 +61,8 @@ class Cpu
         unsigned char delay_timer;
         unsigned char sound_timer;
         unsigned char key[16];
+        int shift_quirk;
+        int load_quirk;
 };
 
 #endif // CPU_H_INCLUDED

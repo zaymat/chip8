@@ -14,7 +14,7 @@ using namespace std;
     to execute the majority of opcode (except those which correspond to GPU and Keyboard interrupts).
 */
 
-Cpu::Cpu(string filename){
+Cpu::Cpu(string filename, int load_quirk, int shift_quirk){
 
     srand((unsigned)time(NULL));
 
@@ -77,6 +77,8 @@ Cpu::Cpu(string filename){
         // Set timers
         delay_timer = 60;
         sound_timer = 60;
+        this->load_quirk = load_quirk;
+        this->shift_quirk = shift_quirk;
     }
     else
     {
@@ -169,11 +171,19 @@ void Cpu::subReg(unsigned char x, unsigned char y){
 }
 
 void Cpu::shiftRight(unsigned char x, unsigned char y){
-    unsigned char res = this->V[y] >> 1;
-    this->V[x] = res;
-    this->V[15] = this->V[y] & 0x01;
-    this->V[y] = res;
-    this->pc += 2;
+    if (this->shift_quirk == 1){
+        unsigned char res = this->V[x] >> 1;
+        this->V[x] = res;
+        this->V[15] = this->V[x] & 0x01;
+        this->pc += 2;
+    }
+    else {
+        unsigned char res = this->V[y] >> 1;
+        this->V[x] = res;
+        this->V[15] = this->V[y] & 0x01;
+        this->V[y] = res;
+        this->pc += 2;
+    }
 }
 
 void Cpu::subCopy(unsigned char x, unsigned char y){
@@ -183,11 +193,19 @@ void Cpu::subCopy(unsigned char x, unsigned char y){
 }
 
 void Cpu::shiftLeft(unsigned char x, unsigned char y){
-    unsigned char res = this->V[y] << 1;
-    this->V[x] = res;
-    this->V[15] = (this->V[y] & 0x80) >> 7;
-    this->V[y] = res;
-    this->pc += 2;
+    if (this->shift_quirk == 1){
+        unsigned char res = this->V[x] << 1;
+        this->V[x] = res;
+        this->V[15] = (this->V[x] & 0x80) >> 7;
+        this->pc += 2;
+    }
+    else {
+        unsigned char res = this->V[y] << 1;
+        this->V[x] = res;
+        this->V[15] = (this->V[y] & 0x80) >> 7;
+        this->V[y] = res;
+        this->pc += 2;
+    }
 }
 
 void Cpu::ifNotEqReg(unsigned char x, unsigned char y){
@@ -251,6 +269,9 @@ void Cpu::regDump(unsigned char x){
         this->memory[this->index] = this->V[i];
         this->index += 1;
     }
+    if (this->load_quirk == 1){
+        this->index -= x+1;
+    }
     this->pc += 2;
 }
 
@@ -258,6 +279,9 @@ void Cpu::regLoad(unsigned char x){
     for(int i = 0; i <= x; i++){
         this->V[i] = this->memory[this->index];
         this->index += 1;
+    }
+    if (this->load_quirk == 1){
+        this->index -= x+1;
     }
     this->pc += 2;
 }
