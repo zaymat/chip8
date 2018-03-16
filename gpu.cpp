@@ -110,7 +110,7 @@ unsigned char Gpu::waitEvent(sf::Event *event){
                 case sf::Keyboard::Num3:
                     return 0x03;
 
-                case sf::Keyboard::Num5:
+                case sf::Keyboard::Num4:
                     return 0x0C;
 
                 case sf::Keyboard::A:
@@ -175,7 +175,7 @@ unsigned short Gpu::pollEvent(sf::Event *event){
             case sf::Keyboard::Num3:
                 return 0x0003;
 
-            case sf::Keyboard::Num5:
+            case sf::Keyboard::Num4:
                 return 0x000C;
 
             case sf::Keyboard::A:
@@ -229,7 +229,7 @@ unsigned short Gpu::pollEvent(sf::Event *event){
             case sf::Keyboard::Num3:
                 return 0x0103;
 
-            case sf::Keyboard::Num5:
+            case sf::Keyboard::Num4:
                 return 0x010C;
 
             case sf::Keyboard::A:
