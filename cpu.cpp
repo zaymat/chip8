@@ -132,7 +132,7 @@ void Cpu::set(unsigned char x, unsigned char val){
 }
 
 void Cpu::add(unsigned char x, unsigned char val){
-    this->V[x] = (this->V[x] + val) % 256;
+    this->V[x] = this->V[x] + val;
     this->pc += 2;
 }
 
@@ -142,23 +142,23 @@ void Cpu::assign(unsigned char x, unsigned char y){
 }
 
 void Cpu::BitOr(unsigned char x, unsigned char y){
-    this->V[x] = this->V[x] | this->V[y];
+    this->V[x] |= this->V[y];
     this->pc += 2;
 }
 
 void Cpu::BitAnd(unsigned char x, unsigned char y){
-    this->V[x] = this->V[x] & this->V[y];
+    this->V[x] &= this->V[y];
     this->pc += 2;
 }
 
 void Cpu::BitXor(unsigned char x, unsigned char y){
-    this->V[x] = this->V[x] ^ this->V[y];
+    this->V[x] ^= this->V[y];
     this->pc += 2;
 }
 
 void Cpu::addReg(unsigned char x, unsigned char y){
     this->V[15] = (this->V[x] + this->V[y]) / 256;
-    this->V[x] = (this->V[x] + this->V[y]) % 256;
+    this->V[x] =  this->V[y];
     this->pc += 2;
 }
 
