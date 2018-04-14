@@ -371,7 +371,7 @@ int main (int argc, char *argv[])
     }  
 
     // Try to emulate 50 Hz frequency of CPU
-    usleep(2000);
+   usleep(2000);
     }
     
     return 0;

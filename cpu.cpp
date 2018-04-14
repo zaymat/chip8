@@ -160,7 +160,7 @@ void Cpu::BitXor(unsigned char x, unsigned char y){
 
 void Cpu::addReg(unsigned char x, unsigned char y){
     this->V[15] = (this->V[x] + this->V[y]) / 256;
-    this->V[x] =  this->V[y];
+    this->V[x] +=  this->V[y];
     this->pc += 2;
 }
 
