@@ -45,7 +45,7 @@ unsigned char Gpu::draw(unsigned char x, unsigned char y, unsigned char height, 
             xi = (x + i);
             if((sprite[j] & (0x80 >> i)) != 0)
             {
-                if (x < 64 && y < 32){
+                if (xi < 64 && yi < 32){
                     if(this->gfx[xi][yi] == 1){
                         VF = 1;                   
                     }
